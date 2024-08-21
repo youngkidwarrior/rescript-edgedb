@@ -24,6 +24,16 @@ describe("fetching data", () => {
     expect(movies)->Expect.toMatchSnapshot
   })
 
+  testAsync("counting movies", async () => {
+    let count = await client->Movies.countAllMovies
+    expect(count)->Expect.toMatchSnapshot
+  })
+
+  testAsync("counting movies with param", async () => {
+    let count = await client->Movies.countAllMoviesWithParam(~title="The Great Adventure")
+    expect(count)->Expect.toMatchSnapshot
+  })
+
   testAsync("fetching single movie", async () => {
     let movie = await client->Movies.movieByTitle(~title="The Great Adventure")
     let movie = movie->JSON.stringifyAny(~replacer=removeIds, ~space=2)->Option.getOr("")

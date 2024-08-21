@@ -1,4 +1,4 @@
-// @sourceHash cc551ceee2a6644bb04f4467951780b0
+// @sourceHash efaa6ba2a4036792cde019bd8b00c865
 
 module AllMovies = {
   let queryText = `# @name allMovies
@@ -32,6 +32,45 @@ module AllMovies = {
   @live
   let transaction = (transaction: EdgeDB.Transaction.t): promise<array<response>> => {
     transaction->EdgeDB.TransactionHelpers.many(queryText)
+  }
+}
+
+module CountAllMovies = {
+  let queryText = `# @name countAllMovies
+      select count(Movie);`
+  
+  type response = float
+  
+  @live
+  let query = (client: EdgeDB.Client.t): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
+    client->EdgeDB.QueryHelpers.singleRequired(queryText)
+  }
+  
+  @live
+  let transaction = (transaction: EdgeDB.Transaction.t): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
+    transaction->EdgeDB.TransactionHelpers.singleRequired(queryText)
+  }
+}
+
+module CountAllMoviesWithParam = {
+  let queryText = `# @name countAllMoviesWithParam
+      select count(Movie filter .title = <str>$title);`
+  
+  @live  
+  type args = {
+    title: string,
+  }
+  
+  type response = float
+  
+  @live
+  let query = (client: EdgeDB.Client.t, args: args): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
+    client->EdgeDB.QueryHelpers.singleRequired(queryText, ~args)
+  }
+  
+  @live
+  let transaction = (transaction: EdgeDB.Transaction.t, args: args): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
+    transaction->EdgeDB.TransactionHelpers.singleRequired(queryText, ~args)
   }
 }
 
@@ -90,7 +129,7 @@ module MovieByTitle = {
               json
             }
         }
-      } 
+      }
         filter .title = <str>$title
         limit 1`
   

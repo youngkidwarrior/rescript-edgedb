@@ -219,6 +219,15 @@ module AnalyzeQuery = {
       ctx.distinctTypes->Set.add(recordDef)
       name
     }
+    and generatePrimitive = (~codec: Codec.t, ~ctx: ctx) => {
+      let name = Utils.pathToName(ctx.currentPath)
+      let annotations = if ctx.currentPath->Array.at(0) === Some("args") {
+        "@live  \n"
+      } else {
+        ""
+      }
+      ctx.distinctTypes->Set.add(`${annotations}type ${name} = ${codec->walkCodec(ctx)}`)
+    }
     and walkCodec = (codec: Codec.t, ctx: ctx) => {
       open Codec
       if codec->is(nullCodec) {
@@ -341,6 +350,20 @@ module AnalyzeQuery = {
           distinctTypes,
         },
       )->generateSetType(cardinality)
+      if (
+        distinctTypes->Set.size === 0 ||
+          !(
+            distinctTypes
+            ->Set.values
+            ->Iterator.toArrayWithMapper(t => String.includes(t, "response"))
+            ->Array.includes(true)
+          )
+      ) {
+        WalkCodec.generatePrimitive(
+          ~codec=outCodec,
+          ~ctx={optionalNulls: false, currentPath: ["response"], distinctTypes},
+        )
+      }
       Ok({
         result,
         args,

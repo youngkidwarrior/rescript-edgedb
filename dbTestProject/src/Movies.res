@@ -22,6 +22,24 @@ let allMovies = client => {
   client->query
 }
 
+let countAllMovies = client => {
+  let query = %edgeql(`
+    # @name countAllMovies
+    select count(Movie);
+  `)
+
+  client->query
+}
+
+let countAllMoviesWithParam = (client, ~title) => {
+  let query = %edgeql(`
+    # @name countAllMoviesWithParam
+    select count(Movie filter .title = <str>$title);
+  `)
+
+  client->query({title: title})
+}
+
 module Nested = {
   let query = %edgeql(`
     # @name allMoviesNested
@@ -58,7 +76,7 @@ let movieByTitle = (client, ~title) => {
             json
           }
       }
-    } 
+    }
       filter .title = <str>$title
       limit 1
     `)
