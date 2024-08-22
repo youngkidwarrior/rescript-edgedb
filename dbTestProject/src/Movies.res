@@ -40,6 +40,24 @@ let countAllMoviesWithParam = (client, ~title) => {
   client->query({title: title})
 }
 
+let testBool = client => {
+  let query = %edgeql(`
+    # @name testBool
+   select '!' IN {'hello', 'world'};
+  `)
+
+  client->query
+}
+
+let testString = client => {
+  let query = %edgeql(`
+    # @name testString
+    select r'A raw \n string';
+  `)
+
+  client->query
+}
+
 module Nested = {
   let query = %edgeql(`
     # @name allMoviesNested

@@ -1,4 +1,4 @@
-// @sourceHash efaa6ba2a4036792cde019bd8b00c865
+// @sourceHash 8b3b5cd8dbf0f74596f7a74af8554e12
 
 module AllMovies = {
   let queryText = `# @name allMovies
@@ -71,6 +71,40 @@ module CountAllMoviesWithParam = {
   @live
   let transaction = (transaction: EdgeDB.Transaction.t, args: args): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
     transaction->EdgeDB.TransactionHelpers.singleRequired(queryText, ~args)
+  }
+}
+
+module TestBool = {
+  let queryText = `# @name testBool
+     select '!' IN {'hello', 'world'};`
+  
+  type response = bool
+  
+  @live
+  let query = (client: EdgeDB.Client.t): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
+    client->EdgeDB.QueryHelpers.singleRequired(queryText)
+  }
+  
+  @live
+  let transaction = (transaction: EdgeDB.Transaction.t): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
+    transaction->EdgeDB.TransactionHelpers.singleRequired(queryText)
+  }
+}
+
+module TestString = {
+  let queryText = `# @name testString
+      select r'A raw \n string';`
+  
+  type response = string
+  
+  @live
+  let query = (client: EdgeDB.Client.t): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
+    client->EdgeDB.QueryHelpers.singleRequired(queryText)
+  }
+  
+  @live
+  let transaction = (transaction: EdgeDB.Transaction.t): promise<result<response, EdgeDB.Error.errorFromOperation>> => {
+    transaction->EdgeDB.TransactionHelpers.singleRequired(queryText)
   }
 }
 

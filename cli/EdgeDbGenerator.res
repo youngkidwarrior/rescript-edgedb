@@ -350,6 +350,9 @@ module AnalyzeQuery = {
           distinctTypes,
         },
       )->generateSetType(cardinality)
+      // walkCodec only handles object codec and named tuple codec.
+      // If distinctTypes is empty, or it is missing a response type,
+      // then we know we are working with a primitive return type.
       if (
         distinctTypes->Set.size === 0 ||
           !(

@@ -34,6 +34,16 @@ describe("fetching data", () => {
     expect(count)->Expect.toMatchSnapshot
   })
 
+  testAsync("test bool", async () => {
+    let bool = await client->Movies.testBool
+    expect(bool)->Expect.toMatchSnapshot
+  })
+
+  testAsync("test string", async () => {
+    let string = await client->Movies.testString
+    expect(string)->Expect.toMatchSnapshot
+  })
+
   testAsync("fetching single movie", async () => {
     let movie = await client->Movies.movieByTitle(~title="The Great Adventure")
     let movie = movie->JSON.stringifyAny(~replacer=removeIds, ~space=2)->Option.getOr("")
